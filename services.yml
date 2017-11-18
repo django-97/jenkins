@@ -1,0 +1,25 @@
+
+---
+
+- hosts: slaves
+  remote_user: ec2-user
+  become: yes
+  become_user: root
+  become_method: sudo
+
+  tasks:
+   - name: start the services
+     service: name=vsftpd state=started
+
+   - name: Stop Service
+     service: name=httpd state=stopped
+
+   - name: install package
+     yum: name=postfix state=present
+    
+   - command: service vsftpd status
+     register: ftp_status
+    
+   - shell: echo "vsftpd is installed"
+     when: ftp_status.stdout.find('vsftpd') != -1
+    
